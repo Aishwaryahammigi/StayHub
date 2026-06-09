@@ -40,11 +40,11 @@
             <i class="fa-solid fa-circle-user user-icon"></i>
           </div>
           <ul class="dropdown-menu dropdown-menu-end mt-2" style="border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.12); border: none; min-width: 200px;">
-            <% if(!currUser) { %>
+            <% if(!locals.currUser) { %>
               <li><a class="dropdown-item py-2 px-3" href="/signup" style="font-weight: 600;">Sign up</a></li>
               <li><a class="dropdown-item py-2 px-3" href="/login">Log in</a></li>
             <% } else { %>
-              <li><div class="dropdown-item-text py-1 px-3 text-muted" style="font-size: 0.8rem;">Logged in as: <b><%= currUser.username %></b></div></li>
+              <li><div class="dropdown-item-text py-1 px-3 text-muted" style="font-size: 0.8rem;">Logged in as: <b><%= locals.currUser.username %></b></div></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item py-2 px-3" href="/listings/new">Airbnb your home</a></li>
               <li><a class="dropdown-item py-2 px-3" href="/listings">Explore listings</a></li>
