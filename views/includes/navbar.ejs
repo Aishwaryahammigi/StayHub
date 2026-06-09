@@ -1,49 +1,58 @@
-<style>
-  .search-btn {
-    background-color: #fe424d;
-    color: #fff;
-    border-radius: 25px;
-    padding: 0 1rem 0 1rem;
-  }
-  .search-btn:hover {
-    background-color: #fe424d;
-    color: #fff;
-  }
-  .search-btn i {
-    display: inline;
-    margin-right: 0.5rem;
-  }
-
-  .search-input {
-    border-radius: 25px;
-    padding: 0.5rem 3rem 0.5rem 3rem;
-    font-size: 1rem;
-  }
-</style><nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" >
-      <span class="navbar-toggler-icon"></span>
+<nav class="navbar navbar-expand-md bg-body-light sticky-top">
+  <div class="container">
+    <!-- Brand Logo -->
+    <a class="navbar-brand" href="/listings">
+      <i class="fa-brands fa-airbnb"></i>
+      <span>StayHub</span>
+    </a>
+    
+    <!-- Navbar toggler for mobile -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+      <i class="fa-solid fa-bars" style="font-size: 1.25rem;"></i>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
-      </div>
-      <div class="navbar-nav ms-auto">
-        <form class="d-flex" role="search">
-          <input class="form-control me-2 search-input" type="search" placeholder="Search destinations"/>
-          <button class="btn search-btn" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>Search</button>
+      <!-- Center Search Capsule -->
+      <div class="navbar-nav mx-auto my-2 my-md-0">
+        <form class="d-flex align-items-center" role="search" action="/listings" method="GET">
+          <div class="search-capsule" onclick="document.getElementById('searchInput').focus();">
+            <input type="text" id="searchInput" name="search" class="border-0 bg-transparent p-0" style="outline: none; width: 140px; font-size: 0.85rem; font-weight: 600;" placeholder="Search destinations" autocomplete="off" />
+            <div class="divider"></div>
+            <span class="search-placeholder-active">Any week</span>
+            <div class="divider"></div>
+            <span class="search-placeholder-muted">Add guests</span>
+            <button class="search-circle-btn" type="submit">
+              <i class="fa-solid fa-magnifying-glass" style="font-size: 0.8rem;"></i>
+            </button>
+          </div>
         </form>
       </div>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
-        <% if(!currUser) { %>
-          <a class="nav-link"  href="/signup"><b>Sign Up</b></a>
-          <a class="nav-link" href="/login"><b>Login</b></a>
-        <% }  %> <% if (currUser) { %>
-          <a class="nav-link" href="/logout"><b>Logout</b></a>
-        <% } %>
+      
+      <!-- Right Side Actions & User Menu -->
+      <div class="navbar-nav align-items-md-center">
+        <a class="nav-link px-3 py-2" href="/listings/new" style="font-weight: 600;">Airbnb your home</a>
+        <i class="fa-solid fa-globe nav-link px-2 d-none d-md-block" style="cursor: pointer; font-size: 1rem;"></i>
+        
+        <!-- User Profile Dropdown Widget -->
+        <div class="dropdown ms-md-2 mt-2 mt-md-0">
+          <div class="profile-widget" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-bars menu-icon"></i>
+            <i class="fa-solid fa-circle-user user-icon"></i>
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end mt-2" style="border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.12); border: none; min-width: 200px;">
+            <% if(!currUser) { %>
+              <li><a class="dropdown-item py-2 px-3" href="/signup" style="font-weight: 600;">Sign up</a></li>
+              <li><a class="dropdown-item py-2 px-3" href="/login">Log in</a></li>
+            <% } else { %>
+              <li><div class="dropdown-item-text py-1 px-3 text-muted" style="font-size: 0.8rem;">Logged in as: <b><%= currUser.username %></b></div></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 px-3" href="/listings/new">Airbnb your home</a></li>
+              <li><a class="dropdown-item py-2 px-3" href="/listings">Explore listings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 px-3 text-danger" href="/logout" style="font-weight: 500;">Log out</a></li>
+            <% } %>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

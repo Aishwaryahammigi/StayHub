@@ -3,9 +3,6 @@ if(process.env.NODE_ENV != "production") {
 }
 
 const express = require("express");
-process.on('uncaughtException', (err) => {
-    console.error('UNCAUGHT EXCEPTION:', err.stack);
-});
 const app = express();
 const mongoose = require("mongoose");
 const path = require("path");
@@ -23,15 +20,22 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
-const dbUrl = process.env.ATLASDB_URL;
+const localDbUrl = "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.USE_LOCAL_DB === "true" ? localDbUrl : process.env.ATLASDB_URL;
+const secret = process.env.SECRET;
+
+console.log("Connecting to Database:", dbUrl);
+console.log("SECRET:", secret);
+
+async function main() {
+  await mongoose.connect(dbUrl, {
+    tlsAllowInvalidCertificates: true,
+  });
+}
 
 main()
   .then(() => console.log("connected to DB"))
-  .catch((err) => console.log(dbUrl));
-
-async function main() {
-  await mongoose.connect(dbUrl);
-}
+  .catch((err) => console.log("DB CONNECTION ERROR:", err));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -42,21 +46,21 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET,
-  },
   touchAfter: 24 * 3600,
+  clientOptions: {
+    tlsAllowInvalidCertificates: true,
+  },
 });
 
-store.on("error", () => {
-  console.log("ERROR in MONGO SESSION STORE", err);
+store.on("error", (err) => {
+  console.log("ERROR in MONGO SESSION STORE:", err);
 });
 
 const sessionOptions = {
   store,
-  secret: process.env.SECRET,
+  secret: secret,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -64,12 +68,12 @@ const sessionOptions = {
   },
 };
 
-// Session, flash, passport MUST come before routes
 app.use(session(sessionOptions));
 app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
@@ -87,9 +91,11 @@ passport.use(
     }
   })
 );
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
+
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
@@ -99,7 +105,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// Locals middleware
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -107,17 +112,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-// 404 Handler - compatible with Node 18
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
 
-// Global Error Handler
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error.ejs", { message });
