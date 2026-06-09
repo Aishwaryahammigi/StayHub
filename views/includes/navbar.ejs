@@ -16,11 +16,11 @@
       <div class="navbar-nav mx-auto my-2 my-md-0">
         <form class="d-flex align-items-center" role="search" action="/listings" method="GET">
           <div class="search-capsule" onclick="document.getElementById('searchInput').focus();">
-            <input type="text" id="searchInput" name="search" class="border-0 bg-transparent p-0" style="outline: none; width: 140px; font-size: 0.85rem; font-weight: 600;" placeholder="Search destinations" autocomplete="off" />
-            <div class="divider"></div>
-            <span class="search-placeholder-active">Any week</span>
-            <div class="divider"></div>
-            <span class="search-placeholder-muted">Add guests</span>
+            <input type="text" id="searchInput" name="search" class="border-0 bg-transparent p-0" style="outline: none; width: 125px; font-size: 0.85rem; font-weight: 600;" placeholder="Search destinations" autocomplete="off" />
+            <div class="divider d-none d-sm-inline-block"></div>
+            <span class="search-placeholder-active d-none d-sm-inline">Any week</span>
+            <div class="divider d-none d-sm-inline-block"></div>
+            <span class="search-placeholder-muted d-none d-sm-inline">Add guests</span>
             <button class="search-circle-btn" type="submit">
               <i class="fa-solid fa-magnifying-glass" style="font-size: 0.8rem;"></i>
             </button>
@@ -48,6 +48,7 @@
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item py-2 px-3" href="/listings/new">Airbnb your home</a></li>
               <li><a class="dropdown-item py-2 px-3" href="/listings">Explore listings</a></li>
+              <li><a class="dropdown-item py-2 px-3 fw-bold" href="/bookings">My Bookings</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item py-2 px-3 text-danger" href="/logout" style="font-weight: 500;">Log out</a></li>
             <% } %>

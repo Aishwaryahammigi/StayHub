@@ -1,0 +1,229 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row mt-4 justify-content-center">
+  <!-- Back link and Title -->
+  <div class="col-md-10 col-12 mb-3">
+    <a href="/listings/<%= listing._id %>?checkin=<%= checkIn %>&checkout=<%= checkOut %>&guests=<%= guests %>" class="text-dark fw-bold text-decoration-none">
+      <i class="fa-solid fa-chevron-left me-2"></i>Back to listing
+    </a>
+    <h2 class="mt-3 fw-bold">Confirm and pay</h2>
+  </div>
+
+  <div class="col-md-10 col-12">
+    <div class="row">
+      <!-- Left Column: Payment Form & Details -->
+      <div class="col-lg-7 col-md-12 pe-lg-5">
+        <h4 class="fw-bold mb-4">Your trip</h4>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="fw-bold mb-1">Dates</h6>
+            <span class="text-muted"><%= new Date(checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %> – <%= new Date(checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h6 class="fw-bold mb-1">Guests</h6>
+            <span class="text-muted"><%= guests %> <%= guests > 1 ? 'guests' : 'guest' %></span>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <h4 class="fw-bold mb-4">Pay with Credit Card</h4>
+        
+        <!-- Live Credit Card Design -->
+        <div class="card-visual-container mb-4">
+          <div class="credit-card-preview shadow">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <i class="fa-solid fa-microchip chip-icon"></i>
+              <i class="fa-brands fa-cc-visa brand-card-icon"></i>
+            </div>
+            <div class="card-number-display mb-3">•••• •••• •••• ••••</div>
+            <div class="d-flex justify-content-between mt-auto">
+              <div>
+                <div class="card-label">CARDHOLDER</div>
+                <div class="card-holder-display">YOUR NAME</div>
+              </div>
+              <div>
+                <div class="card-label">EXPIRES</div>
+                <div class="card-expiry-display">MM/YY</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Form -->
+        <form action="/listings/<%= listing._id %>/book" method="POST" id="checkoutPaymentForm" class="needs-validation" novalidate>
+          <input type="hidden" name="checkIn" value="<%= checkIn %>">
+          <input type="hidden" name="checkOut" value="<%= checkOut %>">
+          <input type="hidden" name="guests" value="<%= guests %>">
+          <input type="hidden" name="totalPrice" value="<%= totalPrice %>">
+          <input type="hidden" name="paymentId" id="paymentIdInput">
+
+          <div class="mb-3">
+            <label for="cardNumber" class="form-label fw-bold">Card Number</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa-solid fa-credit-card"></i></span>
+              <input type="text" class="form-control py-2 shadow-none" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" required autocomplete="off">
+              <div class="invalid-feedback">Please enter a valid 16-digit card number.</div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="cardHolder" class="form-label fw-bold">Cardholder Name</label>
+            <input type="text" class="form-control py-2 shadow-none" id="cardHolder" placeholder="John Doe" required autocomplete="off">
+            <div class="invalid-feedback">Please enter the cardholder's name.</div>
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="cardExpiry" class="form-label fw-bold">Expiration Date</label>
+              <input type="text" class="form-control py-2 shadow-none" id="cardExpiry" placeholder="MM/YY" maxlength="5" required autocomplete="off">
+              <div class="invalid-feedback">Enter expiry date (MM/YY).</div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="cardCvv" class="form-label fw-bold">CVV</label>
+              <input type="password" class="form-control py-2 shadow-none" id="cardCvv" placeholder="•••" maxlength="3" required autocomplete="off">
+              <div class="invalid-feedback">Enter CVV (3-digit).</div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <p class="text-muted" style="font-size: 0.8rem; line-height: 1.5;">
+            By selecting the button below, I agree to the Host's House Rules, StayHub's Rebooking and Refund Policy, and that StayHub can charge my payment method.
+          </p>
+
+          <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-6 add-btn mt-2" style="border-radius: 12px;">
+            Confirm & Pay &#8377; <%= totalPrice.toLocaleString("en-IN") %>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Booking Summary Card -->
+      <div class="col-lg-5 col-md-12 mt-4 mt-lg-0">
+        <div class="card p-4 sticky-lg-top" style="top: 7rem; border-radius: 24px; border: 1px solid #DDDDDD; z-index: 10;">
+          <!-- Listing Preview Header -->
+          <div class="d-flex align-items-center mb-4 pb-4 border-bottom">
+            <img src="<%= originalImageUrl %>" class="rounded-3 me-3" style="width: 120px; height: 90px; object-fit: cover;" alt="listing">
+            <div>
+              <h6 class="fw-bold mb-1 text-truncate" style="max-width: 220px;"><%= listing.title %></h6>
+              <div class="card-subtitle-text mb-1" style="font-size: 0.8rem;"><%= listing.location %></div>
+              <div class="card-rating-box">
+                <i class="fa-solid fa-star"></i>
+                <span class="fw-bold" style="font-size: 0.8rem;"><%= (4.6 + (listing.price % 4) * 0.1).toFixed(2) %></span>
+                <span class="text-muted" style="font-size: 0.8rem;">(<%= listing.reviews.length %> reviews)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Details Summary -->
+          <h5 class="fw-bold mb-3">Price details</h5>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">&#8377; <%= listing.price.toLocaleString("en-IN") %> x <%= nights %> <%= nights > 1 ? 'nights' : 'night' %></span>
+            <span>&#8377; <%= basePrice.toLocaleString("en-IN") %></span>
+          </div>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">StayHub Service fee (5%)</span>
+            <span>&#8377; <%= serviceFee.toLocaleString("en-IN") %></span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">GST (18%)</span>
+            <span>&#8377; <%= gst.toLocaleString("en-IN") %></span>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="d-flex justify-content-between fw-bold fs-5">
+            <span>Total (INR)</span>
+            <span>&#8377; <%= totalPrice.toLocaleString("en-IN") %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Secure Payment Processing Modal Overlay -->
+<div id="paymentLoadingOverlay" class="d-none">
+  <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center">
+    <div class="spinner-border text-danger mb-4" role="status" style="width: 3.5rem; height: 3.5rem; border-width: 4px;"></div>
+    <h3 class="fw-bold text-white mb-2">StayHub Secure Payments</h3>
+    <p class="text-white-50 fs-6">Processing payment securely. Please do not close or refresh this page...</p>
+  </div>
+</div>
+
+<script>
+  // Script to format credit card visual on typing
+  const cardNumInput = document.getElementById('cardNumber');
+  const cardHolderInput = document.getElementById('cardHolder');
+  const cardExpiryInput = document.getElementById('cardExpiry');
+  const cardCvvInput = document.getElementById('cardCvv');
+
+  const cardNumDisplay = document.querySelector('.card-number-display');
+  const cardHolderDisplay = document.querySelector('.card-holder-display');
+  const cardExpiryDisplay = document.querySelector('.card-expiry-display');
+
+  // Format Card Number (space every 4 digits)
+  cardNumInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    let formattedValue = '';
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formattedValue += ' ';
+      }
+      formattedValue += value[i];
+    }
+    e.target.value = formattedValue;
+    cardNumDisplay.textContent = formattedValue || '•••• •••• •••• ••••';
+  });
+
+  // Card Holder display
+  cardHolderInput.addEventListener('input', (e) => {
+    cardHolderDisplay.textContent = e.target.value.toUpperCase() || 'YOUR NAME';
+  });
+
+  // Expiry display
+  cardExpiryInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+    if (value.length > 2) {
+      value = value.substr(0, 2) + '/' + value.substr(2, 2);
+    }
+    e.target.value = value;
+    cardExpiryDisplay.textContent = value || 'MM/YY';
+  });
+
+  // Submit and Secure Payment Spinner logic
+  const form = document.getElementById('checkoutPaymentForm');
+  const overlay = document.getElementById('paymentLoadingOverlay');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    // Check validation
+    if (!form.checkValidity()) {
+      e.stopPropagation();
+      form.classList.add('was-validated');
+      return;
+    }
+
+    form.classList.add('was-validated');
+
+    // Generate random transaction ID
+    const randomTxId = 'STAYHUB-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    document.getElementById('paymentIdInput').value = randomTxId;
+
+    // Show secure portal spinner
+    overlay.classList.remove('d-none');
+
+    // Simulated network payment delay of 3 seconds
+    setTimeout(() => {
+      form.submit();
+    }, 3000);
+  });
+</script>
