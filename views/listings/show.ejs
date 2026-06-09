@@ -215,11 +215,14 @@
     }
   });
 
+  const guestsInput = document.getElementById('guests');
   checkoutInput.addEventListener('change', calculatePrice);
+  guestsInput.addEventListener('change', calculatePrice);
 
   function calculatePrice() {
     const checkinVal = checkinInput.value;
     const checkoutVal = checkoutInput.value;
+    const guestsVal = parseInt(guestsInput.value) || 1;
 
     if (checkinVal && checkoutVal) {
       const checkinDate = new Date(checkinVal);
@@ -229,12 +232,12 @@
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays > 0) {
-        const basePrice = price * diffDays;
+        const basePrice = price * diffDays * guestsVal;
         const serviceFee = Math.round(basePrice * 0.05);
         const gst = Math.round(basePrice * 0.18);
         const total = basePrice + serviceFee + gst;
 
-        basePriceLabel.textContent = `\u20B9 ${price.toLocaleString('en-IN')} x ${diffDays} ${diffDays > 1 ? 'nights' : 'night'}`;
+        basePriceLabel.textContent = `\u20B9 ${price.toLocaleString('en-IN')} x ${diffDays} ${diffDays > 1 ? 'nights' : 'night'} x ${guestsVal} ${guestsVal > 1 ? 'guests' : 'guest'}`;
         basePriceAmount.textContent = `\u20B9 ${basePrice.toLocaleString('en-IN')}`;
         serviceFeeAmount.textContent = `\u20B9 ${serviceFee.toLocaleString('en-IN')}`;
         gstAmount.textContent = `\u20B9 ${gst.toLocaleString('en-IN')}`;
