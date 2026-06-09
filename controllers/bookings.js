@@ -48,7 +48,8 @@ module.exports.renderCheckoutForm = async (req, res) => {
     serviceFee,
     gst,
     totalPrice,
-    originalImageUrl
+    originalImageUrl,
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID || ''
   });
 };
 
