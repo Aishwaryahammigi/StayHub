@@ -29,6 +29,7 @@ console.log("Connecting to Database:", dbUrl);
 console.log("SECRET:", secret);
 
 async function main() {
+  mongoose.set('bufferCommands', false);
   await mongoose.connect(dbUrl, {
     tlsAllowInvalidCertificates: true,
   });
