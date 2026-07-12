@@ -87,7 +87,12 @@
           <h5 class="fw-bold mb-3">Price details</h5>
           
           <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">&#8377; <%= listing.price.toLocaleString("en-IN") %> x <%= nights %> <%= nights > 1 ? 'nights' : 'night' %></span>
+            <span class="text-muted">
+              &#8377; <%= listing.price.toLocaleString("en-IN") %> x <%= nights %> <%= nights > 1 ? 'nights' : 'night' %>
+              <% if (guests > 2) { %>
+                <br><small class="text-muted" style="font-size: 0.75rem;">(+ &#8377;500/night per extra guest)</small>
+              <% } %>
+            </span>
             <span>&#8377; <%= basePrice.toLocaleString("en-IN") %></span>
           </div>
           
@@ -133,6 +138,10 @@
           <small class="text-white-50" style="font-size: 0.7rem;">TEST MODE</small>
         </div>
       </div>
+      <div class="mt-3 d-flex justify-content-between align-items-center text-white-50" style="font-size: 0.75rem;">
+        <span><%= currUser.email %></span>
+        <span>+91 98765 43210</span>
+      </div>
     </div>
 
     <!-- Modal Body -->
@@ -151,51 +160,75 @@
       </div>
 
       <!-- Methods Forms (Right) -->
-      <div class="razorpay-mock-forms flex-grow-1 p-3">
+      <div class="razorpay-mock-forms flex-grow-1 p-4 bg-white">
         <!-- Card Form -->
         <div id="rzp-form-card" class="rzp-form-pane">
-          <h6 class="fw-bold mb-3" style="font-size: 0.85rem; color: #555;">Pay with Cards (Visa, Mastercard, RuPay)</h6>
+          <h6 class="fw-bold mb-3" style="font-size: 0.85rem; color: #4A5568;">Enter Card Details</h6>
+          <div class="mb-3 position-relative">
+            <input type="text" id="rzpCardNumber" class="form-control shadow-none" placeholder="Card Number" style="padding-right: 45px;">
+            <span class="position-absolute end-0 top-50 translate-middle-y me-3 fs-5" style="z-index: 10;">
+              <i id="rzpCardBrandIcon" class="fa-solid fa-credit-card text-muted"></i>
+            </span>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <input type="text" id="rzpCardExpiry" class="form-control shadow-none" placeholder="Expiry (MM/YY)">
+            </div>
+            <div class="col-6">
+              <input type="password" id="rzpCardCvv" class="form-control shadow-none" placeholder="CVV" maxlength="4">
+            </div>
+          </div>
           <div class="mb-2">
-            <input type="text" class="form-control form-control-sm shadow-none" placeholder="Card Number" value="4242 4242 4242 4242" disabled>
-          </div>
-          <div class="row g-2 mb-2">
-            <div class="col-6">
-              <input type="text" class="form-control form-control-sm shadow-none" placeholder="Expiry (MM/YY)" value="12/29" disabled>
-            </div>
-            <div class="col-6">
-              <input type="password" class="form-control form-control-sm shadow-none" placeholder="CVV" value="123" disabled>
-            </div>
-          </div>
-          <div class="mb-3">
-            <input type="text" class="form-control form-control-sm shadow-none" placeholder="Cardholder Name" value="TEST USER" disabled>
+            <input type="text" id="rzpCardName" class="form-control shadow-none text-uppercase" placeholder="Cardholder Name">
           </div>
         </div>
 
         <!-- UPI / QR Form -->
         <div id="rzp-form-upi" class="rzp-form-pane d-none text-center">
-          <h6 class="fw-bold mb-2" style="font-size: 0.85rem; color: #555;">Scan QR Code to Pay</h6>
-          <i class="fa-solid fa-qrcode mb-2 text-dark" style="font-size: 4rem;"></i>
-          <small class="d-block text-muted mb-2">or enter your UPI ID</small>
-          <input type="text" class="form-control form-control-sm shadow-none text-center" placeholder="success@upihandle" value="success@upihandle" disabled>
+          <h6 class="fw-bold mb-3 text-start" style="font-size: 0.85rem; color: #4A5568;">Pay via UPI</h6>
+          
+          <div class="d-flex justify-content-around gap-2 mb-3">
+            <button type="button" class="btn btn-outline-light border text-dark flex-grow-1 py-2 upi-app-btn" onclick="selectUpiApp('gpay')">
+              <i class="fa-brands fa-google-pay fs-3 text-primary"></i>
+            </button>
+            <button type="button" class="btn btn-outline-light border text-dark flex-grow-1 py-2 upi-app-btn" onclick="selectUpiApp('phonepe')">
+              <i class="fa-solid fa-mobile-screen-button fs-4 text-purple" style="color: #5f259f;"></i><span class="ms-1 fw-bold small">PhonePe</span>
+            </button>
+            <button type="button" class="btn btn-outline-light border text-dark flex-grow-1 py-2 upi-app-btn" onclick="selectUpiApp('paytm')">
+              <i class="fa-solid fa-wallet fs-4 text-info"></i><span class="ms-1 fw-bold small">Paytm</span>
+            </button>
+          </div>
+          
+          <div class="text-muted small mb-2">— Or Enter Custom UPI ID —</div>
+          <div class="mb-2">
+            <input type="text" id="rzpUpiId" class="form-control shadow-none text-center" placeholder="username@upihandle">
+          </div>
         </div>
 
         <!-- Netbanking Form -->
         <div id="rzp-form-net" class="rzp-form-pane d-none">
-          <h6 class="fw-bold mb-3" style="font-size: 0.85rem; color: #555;">Popular Banks</h6>
-          <div class="d-flex flex-wrap gap-2">
-            <div class="bank-pill active"><i class="fa-solid fa-building-columns me-1"></i>SBI</div>
-            <div class="bank-pill"><i class="fa-solid fa-building-columns me-1"></i>HDFC</div>
-            <div class="bank-pill"><i class="fa-solid fa-building-columns me-1"></i>ICICI</div>
-            <div class="bank-pill"><i class="fa-solid fa-building-columns me-1"></i>Axis Bank</div>
+          <h6 class="fw-bold mb-3" style="font-size: 0.85rem; color: #4A5568;">Select Popular Bank</h6>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <button type="button" class="bank-pill active" onclick="selectBank(this, 'State Bank of India')"><i class="fa-solid fa-building-columns me-1"></i>SBI</button>
+            <button type="button" class="bank-pill" onclick="selectBank(this, 'HDFC Bank')"><i class="fa-solid fa-building-columns me-1"></i>HDFC</button>
+            <button type="button" class="bank-pill" onclick="selectBank(this, 'ICICI Bank')"><i class="fa-solid fa-building-columns me-1"></i>ICICI</button>
+            <button type="button" class="bank-pill" onclick="selectBank(this, 'Axis Bank')"><i class="fa-solid fa-building-columns me-1"></i>Axis</button>
           </div>
+          <select id="rzpBankSelect" class="form-select shadow-none">
+            <option value="" disabled>Other Banks</option>
+            <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+            <option value="Yes Bank">Yes Bank</option>
+            <option value="Punjab National Bank">Punjab National Bank</option>
+            <option value="Bank of Baroda">Bank of Baroda</option>
+          </select>
         </div>
       </div>
     </div>
 
     <!-- Modal Footer -->
-    <div class="razorpay-mock-footer p-3 border-top d-flex align-items-center justify-content-between">
+    <div class="razorpay-mock-footer p-3 bg-light border-top d-flex align-items-center justify-content-between">
       <span class="text-muted" style="font-size: 0.75rem;"><i class="fa-solid fa-lock me-1"></i>Secured by Razorpay</span>
-      <button type="button" class="btn btn-primary px-4 fw-bold" id="rzpPaySubmitBtn" style="font-size: 0.85rem; background-color: #3395FF; border: none;">
+      <button type="button" class="btn btn-primary px-4 py-2 fw-bold" id="rzpPaySubmitBtn" style="font-size: 0.85rem; background-color: #3395FF; border: none; border-radius: 6px;">
         Pay &#8377;<%= totalPrice.toLocaleString("en-IN") %>
       </button>
     </div>
@@ -203,16 +236,43 @@
 </div>
 
 <!-- ========================================== -->
-<!-- RAZORPAY TEST PAYMENT AUTHORIZATION POPUP -->
+<!-- MOCK 3D SECURE OTP PORTAL (BANK SIMULATION) -->
 <!-- ========================================== -->
-<div id="razorpayAuthOverlay" class="d-none">
-  <div class="razorpay-auth-card shadow animate-pop p-4 text-center bg-white rounded-4" style="width: 320px; z-index: 10001;">
-    <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" class="mb-3" style="width: 40px;">
-    <h5 class="fw-bold mb-2">Razorpay Auth Portal</h5>
-    <p class="text-muted small mb-4">This is a simulated Razorpay sandbox payment environment. Choose payment status:</p>
+<div id="otpOverlay" class="d-none">
+  <div class="otp-card shadow animate-pop p-4 text-center bg-white rounded-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+      <h6 class="fw-bold mb-0 text-dark" id="otpBankTitle">Secure Payment Authentication</h6>
+      <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" style="width: 20px;">
+    </div>
+    
+    <div class="text-start mb-3 bg-light p-3 rounded-3" style="font-size: 0.85rem;">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="text-muted">Merchant:</span>
+        <strong class="text-dark">StayHub Bookings</strong>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span class="text-muted">Amount:</span>
+        <strong class="text-dark">&#8377; <%= totalPrice.toLocaleString("en-IN") %></strong>
+      </div>
+    </div>
+
+    <p class="text-muted text-start mb-3" style="font-size: 0.8rem; line-height: 1.4;">
+      An OTP has been sent to your registered mobile number ending in **4321.
+    </p>
+
+    <div class="mb-3">
+      <input type="text" id="otpInput" class="form-control form-control-lg text-center fw-bold shadow-none" placeholder="123456" maxlength="6" style="letter-spacing: 0.4rem; font-size: 1.4rem;">
+      <div class="invalid-feedback text-start mt-1" id="otpError" style="font-size: 0.75rem;">Please enter a valid 6-digit OTP.</div>
+      <small class="text-muted d-block mt-2">Enter any 6-digit code to authorize the test payment.</small>
+    </div>
+
     <div class="d-grid gap-2">
-      <button type="button" class="btn btn-success py-2 fw-bold" onclick="completeSimulatedPayment(true)">Success</button>
-      <button type="button" class="btn btn-danger py-2 fw-bold" onclick="completeSimulatedPayment(false)">Failure</button>
+      <button type="button" class="btn btn-success py-2 fw-bold" id="otpSubmitBtn">Submit OTP</button>
+      <button type="button" class="btn btn-light py-2 text-muted fw-bold border" id="otpCancelBtn">Cancel Transaction</button>
+    </div>
+
+    <div class="mt-3">
+      <small class="text-muted" style="font-size: 0.75rem;">Resend OTP in <span id="otpTimer">59</span>s</small>
     </div>
   </div>
 </div>
@@ -231,7 +291,13 @@
   const payForm = document.getElementById('checkoutPaymentForm');
   const payIdInput = document.getElementById('paymentIdInput');
   const rzpMockOverlay = document.getElementById('razorpayMockOverlay');
-  const rzpAuthOverlay = document.getElementById('razorpayAuthOverlay');
+  const otpOverlay = document.getElementById('otpOverlay');
+  const otpInput = document.getElementById('otpInput');
+  const otpSubmitBtn = document.getElementById('otpSubmitBtn');
+  const otpCancelBtn = document.getElementById('otpCancelBtn');
+  const otpError = document.getElementById('otpError');
+  const otpBankTitle = document.getElementById('otpBankTitle');
+  const otpTimerSpan = document.getElementById('otpTimer');
   const paymentLoadingOverlay = document.getElementById('paymentLoadingOverlay');
 
   const rzpKeyId = "<%= razorpayKeyId %>";
@@ -239,6 +305,9 @@
   const listingTitle = "<%= listing.title %>";
   const userEmail = "<%= currUser.email %>";
   const userName = "<%= currUser.username %>";
+
+  let selectedBankName = "State Bank of India";
+  let otpInterval;
 
   payBtn.addEventListener('click', () => {
     // If a valid Razorpay API Key ID is supplied in .env, launch the real Razorpay Web SDK!
@@ -301,33 +370,122 @@
     if (activePane) activePane.classList.remove('d-none');
   }
 
-  // Submit Simulated Payment
-  document.getElementById('rzpPaySubmitBtn').addEventListener('click', () => {
-    // Open the authentic simulated payment success/failure authorization popup
-    rzpMockOverlay.classList.add('d-none');
-    rzpAuthOverlay.classList.remove('d-none');
+  // Interactive Card Form Listeners
+  const cardInput = document.getElementById('rzpCardNumber');
+  const cardBrandIcon = document.getElementById('rzpCardBrandIcon');
+  
+  cardInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    let formattedValue = '';
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && i % 4 === 0) formattedValue += ' ';
+      formattedValue += value[i];
+    }
+    e.target.value = formattedValue.substring(0, 19); // Max 16 digits + 3 spaces
+    
+    // Detect brand
+    if (value.startsWith('4')) {
+      cardBrandIcon.className = 'fa-brands fa-cc-visa text-primary';
+    } else if (value.startsWith('5')) {
+      cardBrandIcon.className = 'fa-brands fa-cc-mastercard text-warning';
+    } else if (value.startsWith('6')) {
+      cardBrandIcon.className = 'fa-solid fa-credit-card text-success'; // RuPay green
+    } else {
+      cardBrandIcon.className = 'fa-solid fa-credit-card text-muted';
+    }
   });
 
-  // Handle Auth options (Success / Failure)
-  function completeSimulatedPayment(success) {
-    rzpAuthOverlay.classList.add('d-none');
-    
-    if (success) {
-      // Show payment processing loader
-      paymentLoadingOverlay.classList.remove('d-none');
-      
-      // Generate a mock payment ID starting with "pay_"
-      const mockPayId = 'pay_' + Math.random().toString(36).substr(2, 14).toUpperCase();
-      payIdInput.value = mockPayId;
-
-      // Submit form after a realistic 2 second spinner delay
-      setTimeout(() => {
-        payForm.submit();
-      }, 2000);
+  // Expiry formatting
+  const expInput = document.getElementById('rzpCardExpiry');
+  expInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/[^0-9]/gi, '');
+    if (value.length > 2) {
+      e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
     } else {
-      alert("Payment authentication failed. Please try again.");
+      e.target.value = value;
+    }
+  });
+
+  // Prefill UPI from Apps
+  function selectUpiApp(appName) {
+    const upiInput = document.getElementById('rzpUpiId');
+    const uName = userName.toLowerCase().replace(/\s+/g, '');
+    
+    if (appName === 'gpay') {
+      upiInput.value = `${uName}@okaxis`;
+    } else if (appName === 'phonepe') {
+      upiInput.value = `${uName}@ybl`;
+    } else if (appName === 'paytm') {
+      upiInput.value = `${uName}@paytm`;
     }
   }
+
+  // Netbanking Selection
+  function selectBank(element, bankName) {
+    const pills = document.querySelectorAll('.bank-pill');
+    pills.forEach(p => p.classList.remove('active'));
+    element.classList.add('active');
+    selectedBankName = bankName;
+    document.getElementById('rzpBankSelect').value = ""; // Clear other bank dropdown
+  }
+
+  document.getElementById('rzpBankSelect').addEventListener('change', (e) => {
+    const pills = document.querySelectorAll('.bank-pill');
+    pills.forEach(p => p.classList.remove('active'));
+    selectedBankName = e.target.value;
+  });
+
+  // Submit Simulated Payment -> Launch OTP Modal
+  document.getElementById('rzpPaySubmitBtn').addEventListener('click', () => {
+    // Determine title of OTP screen
+    otpBankTitle.textContent = `${selectedBankName} 3D Secure`;
+    
+    rzpMockOverlay.classList.add('d-none');
+    otpOverlay.classList.remove('d-none');
+    
+    // Clear input & start timer
+    otpInput.value = "";
+    otpInput.classList.remove('is-invalid');
+    otpError.style.display = 'none';
+    
+    let timer = 59;
+    otpTimerSpan.textContent = timer;
+    clearInterval(otpInterval);
+    otpInterval = setInterval(() => {
+      timer--;
+      otpTimerSpan.textContent = timer;
+      if (timer <= 0) clearInterval(otpInterval);
+    }, 1000);
+  });
+
+  // Submit OTP
+  otpSubmitBtn.addEventListener('click', () => {
+    const otpVal = otpInput.value.trim();
+    if (otpVal.length !== 6 || isNaN(otpVal)) {
+      otpInput.classList.add('is-invalid');
+      otpError.style.display = 'block';
+      return;
+    }
+
+    otpOverlay.classList.add('d-none');
+    paymentLoadingOverlay.classList.remove('d-none');
+
+    // Generate a mock payment ID starting with "pay_"
+    const mockPayId = 'pay_' + Math.random().toString(36).substr(2, 14).toUpperCase();
+    payIdInput.value = mockPayId;
+
+    // Submit form after a realistic 2 second spinner delay
+    setTimeout(() => {
+      payForm.submit();
+    }, 2000);
+  });
+
+  // Cancel OTP
+  otpCancelBtn.addEventListener('click', () => {
+    clearInterval(otpInterval);
+    otpOverlay.classList.add('d-none');
+    alert("Transaction cancelled by user.");
+  });
 </script>
 
 <style>
@@ -350,7 +508,7 @@
     backdrop-filter: blur(2px);
   }
 
-  #razorpayAuthOverlay {
+  #otpOverlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -365,7 +523,7 @@
 
   .razorpay-mock-modal {
     width: 100%;
-    max-width: 520px;
+    max-width: 580px;
     background-color: #ffffff;
     border-radius: 8px;
     overflow: hidden;
@@ -374,15 +532,23 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
+  .otp-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
   .razorpay-mock-header {
-    background-color: #0b1a30;
-    padding: 20px;
-    border-bottom: 1px solid #1a2f4c;
+    background-color: #111827; /* Dark charcoal */
+    padding: 24px;
+    border-bottom: 1px solid #374151;
   }
 
   .razorpay-logo-badge {
     background-color: #3395FF;
-    color: #white;
+    color: white;
     width: 32px;
     height: 32px;
     display: flex;
@@ -391,31 +557,30 @@
     border-radius: 6px;
     font-weight: bold;
     font-size: 1.1rem;
-    color: white;
   }
 
   .razorpay-mock-body {
-    min-height: 220px;
-    background-color: #f8f9fa;
+    min-height: 250px;
+    background-color: #ffffff;
   }
 
   .razorpay-mock-tabs {
-    width: 150px;
-    border-right: 1px solid #ebebeb;
-    background-color: #ffffff;
+    width: 160px;
+    border-right: 1px solid #E5E7EB;
+    background-color: #F9FAFB;
     display: flex;
     flex-direction: column;
-    padding-top: 10px;
+    padding-top: 15px;
   }
 
   .rzp-tab {
     background: none;
     border: none;
     text-align: left;
-    padding: 12px 16px;
+    padding: 14px 20px;
     font-size: 0.85rem;
-    font-weight: 500;
-    color: #4a5568;
+    font-weight: 600;
+    color: #4B5563;
     display: flex;
     align-items: center;
     transition: background-color 0.15s, color 0.15s;
@@ -423,20 +588,20 @@
   }
 
   .rzp-tab:hover {
-    background-color: #f7fafc;
+    background-color: #F3F4F6;
   }
 
   .rzp-tab.active {
-    background-color: #ebf8ff;
-    color: #2b6cb0;
-    border-left: 3px solid #3395FF;
+    background-color: #EFF6FF;
+    color: #2563EB;
+    border-left: 4px solid #3395FF;
   }
 
   .bank-pill {
-    border: 1px solid #cbd5e0;
+    border: 1px solid #D1D5DB;
     border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 0.75rem;
+    padding: 6px 16px;
+    font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
     background-color: #ffffff;
@@ -444,9 +609,14 @@
   }
 
   .bank-pill:hover, .bank-pill.active {
-    background-color: #ebf8ff;
-    border-color: #3182ce;
-    color: #2b6cb0;
+    background-color: #EFF6FF;
+    border-color: #3B82F6;
+    color: #1D4ED8;
+  }
+
+  .upi-app-btn:hover {
+    background-color: #EFF6FF !important;
+    border-color: #3B82F6 !important;
   }
 
   .animate-pop {
@@ -476,13 +646,13 @@
       width: 100%;
       flex-direction: row;
       border-right: none;
-      border-bottom: 1px solid #ebebeb;
+      border-bottom: 1px solid #E5E7EB;
       padding-top: 0;
     }
     .rzp-tab {
       flex: 1;
       justify-content: center;
-      padding: 10px;
+      padding: 12px;
       border-left: none;
       border-bottom: 3px solid transparent;
     }

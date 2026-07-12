@@ -1,13 +1,15 @@
-<% if(locals.success && locals.success.length) { %>
-<div class="alert alert-success alert-dismissable fade show col-6 offset-3" role="alert">
-    <%= locals.success %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<% if(typeof success !== 'undefined' && success.length) { %>
+<div class="alert alert-success alert-dismissible fade show col-lg-6 col-md-8 col-10 mx-auto my-3 shadow-sm border-0 rounded-4 text-center" role="alert" style="background-color: #E8F5E9; color: #2E7D32; z-index: 1050; position: relative; border-left: 5px solid #4CAF50 !important;">
+    <i class="fa-solid fa-circle-check me-2"></i>
+    <span class="fw-semibold"><%= success %></span>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <% } %>
 
-<% if(locals.error && locals.error.length) { %>
-<div class="alert alert-danger alert-dismissable fade show col-6 offset-3" role="alert">
-    <%= locals.error %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<% if(typeof error !== 'undefined' && error.length) { %>
+<div class="alert alert-danger alert-dismissible fade show col-lg-6 col-md-8 col-10 mx-auto my-3 shadow-sm border-0 rounded-4 text-center" role="alert" style="background-color: #FFEBEE; color: #C62828; z-index: 1050; position: relative; border-left: 5px solid #EF5350 !important;">
+    <i class="fa-solid fa-circle-exclamation me-2"></i>
+    <span class="fw-semibold"><%= error %></span>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <% } %>

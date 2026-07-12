@@ -27,15 +27,22 @@ module.exports.signup = async (req, res, next) => {
       if (err) {
         console.error('req.login error:', err);
         req.flash('error', err && err.message ? err.message : 'Login error');
-        return res.redirect('/signup');
+        req.session.save(() => {
+          res.redirect('/signup');
+        });
+        return;
       }
-      req.flash('success', 'Welcome to StayHub!');
-      res.redirect('/listings');
+      req.flash('success', `Successfully signed in as ${user.username}, welcome ${user.username} to StayHub!`);
+      req.session.save(() => {
+        res.redirect('/listings');
+      });
     });
   } catch (e) {
     console.error('signup error catch:', e);
     req.flash('error', e && e.message ? e.message : String(e));
-    res.redirect('/signup');
+    req.session.save(() => {
+      res.redirect('/signup');
+    });
   }
 };
 
@@ -44,17 +51,22 @@ module.exports.renderLoginForm = (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  req.flash("success", "Welcome back to StayHub!");
+  const username = req.user ? req.user.username : "";
+  req.flash("success", `Welcome back ${username} to StayHub!`);
   let redirectUrl = res.locals.redirectUrl || '/listings';
-  res.redirect(redirectUrl);
+  req.session.save(() => {
+    res.redirect(redirectUrl);
+  });
 };
 
-module.exports.logout = (req, res) => {
+module.exports.logout = (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err);
     }
     req.flash("success", "You have logged out successfully!");
-    res.redirect('/listings');
+    req.session.save(() => {
+      res.redirect('/listings');
+    });
   });
 };

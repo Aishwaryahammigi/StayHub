@@ -45,6 +45,17 @@
         <div class="invalid-feedback">Please provide a valid location.</div>
       </div>
 
+      <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <select name="listing[category]" class="form-select" required>
+          <% const categories = ['Trending', 'Rooms', 'Iconic Cities', 'Mountains', 'Amazing Pools', 'Camping', 'Farms', 'Arctic', 'Domes']; %>
+          <% for(let cat of categories) { %>
+            <option value="<%= cat %>" <%= listing.category === cat ? 'selected' : '' %>><%= cat %></option>
+          <% } %>
+        </select>
+        <div class="invalid-feedback">Please select a category.</div>
+      </div>
+
       <button class="btn btn-dark edit-btn mt-3 px-4">Save Changes</button>
     </form>
   </div>

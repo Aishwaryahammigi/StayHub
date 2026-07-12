@@ -3,42 +3,42 @@
 <!-- Categories Filters and Tax Switch -->
 <div id="filters-container" class="mb-4">
   <div id="filters">
-    <div class="filter active">
+    <a href="<%= activeCategory === 'Trending' ? '/listings' : '/listings?category=Trending' %>" class="filter <%= activeCategory === 'Trending' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-fire"></i></div>
       <p>Trending</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Rooms' ? '/listings' : '/listings?category=Rooms' %>" class="filter <%= activeCategory === 'Rooms' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-bed"></i></div>
       <p>Rooms</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Iconic Cities' ? '/listings' : '/listings?category=Iconic Cities' %>" class="filter <%= activeCategory === 'Iconic Cities' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-mountain-city"></i></div>
       <p>Iconic Cities</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Mountains' ? '/listings' : '/listings?category=Mountains' %>" class="filter <%= activeCategory === 'Mountains' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-mountain"></i></div>
       <p>Mountains</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Amazing Pools' ? '/listings' : '/listings?category=Amazing Pools' %>" class="filter <%= activeCategory === 'Amazing Pools' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-person-swimming"></i></div>
       <p>Amazing Pools</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Camping' ? '/listings' : '/listings?category=Camping' %>" class="filter <%= activeCategory === 'Camping' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-campground"></i></div>
       <p>Camping</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Farms' ? '/listings' : '/listings?category=Farms' %>" class="filter <%= activeCategory === 'Farms' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-wheat-awn"></i></div>
       <p>Farms</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Arctic' ? '/listings' : '/listings?category=Arctic' %>" class="filter <%= activeCategory === 'Arctic' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-snowflake"></i></div>
       <p>Arctic</p>
-    </div>
-    <div class="filter">
+    </a>
+    <a href="<%= activeCategory === 'Domes' ? '/listings' : '/listings?category=Domes' %>" class="filter <%= activeCategory === 'Domes' ? 'active' : '' %> text-decoration-none text-dark">
       <div><i class="fa-solid fa-igloo"></i></div>
       <p>Domes</p>
-    </div>
+    </a>
   </div>
 
   <!-- Tax Toggle Switch -->
@@ -126,7 +126,10 @@
   const filters = document.querySelectorAll('.filter');
   filters.forEach(filter => {
     filter.addEventListener('click', () => {
-      document.querySelector('.filter.active').classList.remove('active');
+      const activeFilter = document.querySelector('.filter.active');
+      if (activeFilter) {
+        activeFilter.classList.remove('active');
+      }
       filter.classList.add('active');
     });
   });

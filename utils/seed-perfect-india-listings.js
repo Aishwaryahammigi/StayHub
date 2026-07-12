@@ -78,7 +78,7 @@ const listingsData = [
   {
     title: "Hilltop Tea Plantation Villa in Munnar",
     description: "Located atop a misty hill in Munnar, this private villa offers 360-degree views of vast tea gardens, custom treks, and a fireplace.",
-    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1593693411515-c202e974eb17?auto=format&fit=crop&w=800&q=80" },
+    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?auto=format&fit=crop&w=800&q=80" },
     price: 4800,
     location: "Munnar, Kerala",
     country: "India"
@@ -170,7 +170,7 @@ const listingsData = [
   {
     title: "Snowy Peaks Lodge in Sonamarg",
     description: "A premium mountain lodge nestled in Sonamarg. Features stone fireplaces, cedar walls, and direct trail access to Thajiwas Glacier.",
-    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1518098268026-4e43a1a009de?auto=format&fit=crop&w=800&q=80" },
+    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80" },
     price: 6500,
     location: "Sonamarg, Jammu and Kashmir",
     country: "India"
@@ -180,7 +180,7 @@ const listingsData = [
   {
     title: "Serene Coffee Estate Homestay in Coorg",
     description: "Wake up to the aroma of coffee in this peaceful estate homestay. Includes guided plantation walks and authentic local Kodava meals.",
-    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1550976621-219b1c068305?auto=format&fit=crop&w=800&q=80" },
+    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" },
     price: 4000,
     location: "Coorg, Karnataka",
     country: "India"
@@ -248,7 +248,7 @@ const listingsData = [
   {
     title: "Heritage Haveli in Udaipur",
     description: "Experience royal hospitality in this 200-year-old haveli overlooking Lake Pichola. Features traditional Mewari architecture and modern amenities.",
-    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1598977123418-45f04b615a0e?auto=format&fit=crop&w=800&q=80" },
+    image: { filename: "listingimage", url: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=800&q=80" },
     price: 6500,
     location: "Udaipur, Rajasthan",
     country: "India"
@@ -296,6 +296,51 @@ async function geocodeAddress(query) {
   return null;
 }
 
+function getCategory(title, location) {
+  const text = `${title} ${location}`.toLowerCase();
+  
+  if (text.includes("mountain") || text.includes("hill") || text.includes("peaks") || 
+      text.includes("himalayan") || text.includes("manali") || text.includes("shimla") || 
+      text.includes("dharamshala") || text.includes("gulmarg") || text.includes("pahalgam") || 
+      text.includes("mahabaleshwar")) {
+    return "Mountains";
+  }
+  if (text.includes("pool") || text.includes("beachfront") || text.includes("resort") || 
+      text.includes("calangute") || text.includes("anjuna") || text.includes("lonavala")) {
+    return "Amazing Pools";
+  }
+  if (text.includes("shack") || text.includes("room") || text.includes("loft") || 
+      text.includes("apartment") || text.includes("palolem")) {
+    return "Rooms";
+  }
+  if (text.includes("houseboat") || text.includes("city") || text.includes("mumbai") || 
+      text.includes("srinagar") || text.includes("panaji") || text.includes("haveli") || 
+      text.includes("boutique") || text.includes("agra") || text.includes("udaipur") || 
+      text.includes("new york") || text.includes("florence") || text.includes("historic")) {
+    return "Iconic Cities";
+  }
+  if (text.includes("camp") || text.includes("safari") || text.includes("tent") || 
+      text.includes("mulshi") || text.includes("jaisalmer") || text.includes("rishikesh")) {
+    return "Camping";
+  }
+  if (text.includes("farm") || text.includes("estate") || text.includes("plantation") || 
+      text.includes("homestay") || text.includes("coorg") || text.includes("chikmagalur") || 
+      text.includes("kumarakom") || text.includes("treehouse") || text.includes("wayanad") || 
+      text.includes("tuscany")) {
+    return "Farms";
+  }
+  if (text.includes("snowy") || text.includes("arctic") || text.includes("glacier") || 
+      text.includes("sonamarg") || text.includes("aspen")) {
+    return "Arctic";
+  }
+  if (text.includes("dome") || text.includes("cabin") || text.includes("cottage") || 
+      text.includes("madikeri") || text.includes("secluded") || text.includes("treehouse")) {
+    return "Domes";
+  }
+  
+  return "Trending";
+}
+
 async function seedDatabase(url, dbName) {
   console.log(`Connecting to database: ${dbName}...`);
   const conn = await mongoose.createConnection(url, {
@@ -331,6 +376,7 @@ async function seedDatabase(url, dbName) {
     const listingObj = {
       ...data,
       owner: user._id,
+      category: getCategory(data.title, data.location),
       geometry: geometry || {
         type: "Point",
         coordinates: [77.2090, 28.6139] // Fallback

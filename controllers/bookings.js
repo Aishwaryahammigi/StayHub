@@ -27,7 +27,11 @@ module.exports.renderCheckoutForm = async (req, res) => {
   }
 
   const pricePerNight = listing.price;
-  const basePrice = pricePerNight * nights * (parseInt(guests) || 1);
+  const numGuests = parseInt(guests) || 1;
+  let basePrice = pricePerNight * nights;
+  if (numGuests > 2) {
+    basePrice += (numGuests - 2) * 500 * nights; // ₹500 per extra guest per night
+  }
   const serviceFee = Math.round(basePrice * 0.05); // 5% Service Fee
   const gst = Math.round(basePrice * 0.18); // 18% GST
   const totalPrice = basePrice + serviceFee + gst;

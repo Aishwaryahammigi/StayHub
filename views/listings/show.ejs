@@ -148,7 +148,7 @@
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between fw-bold fs-5">
-                  <span>Total before taxes</span>
+                  <span>Total (incl. taxes & fees)</span>
                   <span id="totalPriceAmount">&#8377; 0</span>
                 </div>
               </div>
@@ -232,13 +232,22 @@
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays > 0) {
-        const basePrice = price * diffDays * guestsVal;
-        const serviceFee = Math.round(basePrice * 0.05);
-        const gst = Math.round(basePrice * 0.18);
-        const total = basePrice + serviceFee + gst;
+        let basePrice = price * diffDays;
+        let extraGuestFee = 0;
+        if (guestsVal > 2) {
+          extraGuestFee = (guestsVal - 2) * 500 * diffDays;
+        }
+        const finalBasePrice = basePrice + extraGuestFee;
+        const serviceFee = Math.round(finalBasePrice * 0.05);
+        const gst = Math.round(finalBasePrice * 0.18);
+        const total = finalBasePrice + serviceFee + gst;
 
-        basePriceLabel.textContent = `\u20B9 ${price.toLocaleString('en-IN')} x ${diffDays} ${diffDays > 1 ? 'nights' : 'night'} x ${guestsVal} ${guestsVal > 1 ? 'guests' : 'guest'}`;
-        basePriceAmount.textContent = `\u20B9 ${basePrice.toLocaleString('en-IN')}`;
+        if (guestsVal > 2) {
+          basePriceLabel.textContent = `\u20B9 ${price.toLocaleString('en-IN')} x ${diffDays} ${diffDays > 1 ? 'nights' : 'night'} (+ \u20B9 500/night per extra guest)`;
+        } else {
+          basePriceLabel.textContent = `\u20B9 ${price.toLocaleString('en-IN')} x ${diffDays} ${diffDays > 1 ? 'nights' : 'night'}`;
+        }
+        basePriceAmount.textContent = `\u20B9 ${finalBasePrice.toLocaleString('en-IN')}`;
         serviceFeeAmount.textContent = `\u20B9 ${serviceFee.toLocaleString('en-IN')}`;
         gstAmount.textContent = `\u20B9 ${gst.toLocaleString('en-IN')}`;
         totalPriceAmount.textContent = `\u20B9 ${total.toLocaleString('en-IN')}`;
