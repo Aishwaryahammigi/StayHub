@@ -358,8 +358,8 @@ async function seedDatabase(url, dbName) {
   if (!user) {
     console.log("No user found. Creating default admin user...");
     user = new SeedUser({
-      username: "Aishwarya Hammigi",
-      email: "aishwarya@stayhub.com"
+      username: "stayhub_admin",
+      email: "admin@stayhub.com"
     });
     await user.setPassword("stayhubadmin123");
     await user.save();

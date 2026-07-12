@@ -122,6 +122,21 @@ app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 app.use("/", bookingRouter);
 
+app.get("/migration-rename-user", async (req, res) => {
+  try {
+    const user = await User.findOne({ username: "Aishwarya Hammigi" });
+    if (user) {
+      user.username = "stayhub_admin";
+      user.email = "admin@stayhub.com";
+      await user.save();
+      return res.send("✅ Successfully renamed user to stayhub_admin!");
+    }
+    return res.send("ℹ️ User 'Aishwarya Hammigi' not found in database.");
+  } catch (err) {
+    return res.status(500).send("❌ Migration failed: " + err.message);
+  }
+});
+
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
